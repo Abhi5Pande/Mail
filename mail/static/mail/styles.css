@@ -8,3 +8,6 @@ textarea {
 .is_read{
     background-color: lightgrey;
 }
+.email:hover{
+    background-color: lightgrey;
+}
