@@ -11,17 +11,18 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 });
 
-function compose_email() {
+function compose_email(r='',s='',b='') {
   //console.log("Inside compose emails");
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#email-read').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#email-read').innerHTML="";
 
   // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
+  document.querySelector('#compose-recipients').value = r;
+  document.querySelector('#compose-subject').value = s;
+  document.querySelector('#compose-body').value = b;
   document.querySelector('#compose-form').onsubmit = () => {
      console.log("Form submit btm clicked");
     let recipients = document.querySelector('#compose-recipients').value;
@@ -61,6 +62,8 @@ function load_email(id,mailbox)
     let button = document.createElement("button")
     button.classList.add("archive")
     button.innerHTML = `Archive`;
+    let reply = document.createElement("button")
+    reply.innerHTML = "Reply"
     email_dets.innerHTML = `
       <div>From: ${email.sender}<br>To:${email.recipients}<br> ${email.timestamp}
       </div>
@@ -72,7 +75,17 @@ function load_email(id,mailbox)
     if(mailbox==='inbox'){
       document.querySelector('#email-read').append(button);
     }
+    document.querySelector("#email-read").append(reply);
     document.querySelector('#email-read').append(email_dets);
+
+    reply.onclick = () => {
+      if(mailbox==='inbox' || mailbox==='archive'){
+      compose_email(email.sender,email.subject)
+      }
+      else{
+        compose_email(email.recipients,email.subject)        
+      }
+    }
     button.onclick = ()=>{
       fetch(`/emails/${id}`, {
         method: 'PUT',
@@ -138,6 +151,7 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#email-read').style.display = 'none';
+  document.querySelector('#email-read').innerHTML = '';
 
 
   // Show the mailbox name
