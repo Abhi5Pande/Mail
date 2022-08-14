@@ -58,18 +58,30 @@ function load_email(id,mailbox)
   .then(email => {
     let email_dets = document.createElement("div");
     email_dets.classList.add("email-dets")
+    let button = document.createElement("button")
+    button.classList.add("archive")
+    button.innerHTML = `Archive`;
     email_dets.innerHTML = `
-      <div>From: ${email.sender}</div>
-      <hr>
-      <div>To: ${email.recipients}</div>
-      <hr>
-      <div>At: ${email.timestamp}</div>
+      <div>From: ${email.sender}<br>To:${email.recipients}<br> ${email.timestamp}
+      </div>
       <hr>
       <div>Subject: ${email.subject}</div>
       <hr>
       <div> Body:<br>${email.body} </div>
     `
+    if(mailbox==='inbox'){
+      document.querySelector('#email-read').append(button);
+    }
     document.querySelector('#email-read').append(email_dets);
+    button.onclick = ()=>{
+      fetch(`/emails/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: true
+        })
+      })
+      load_mailbox('inbox');
+    }
   })
   fetch(`/emails/${id}`, {
     method: 'PUT',
@@ -77,20 +89,23 @@ function load_email(id,mailbox)
         read: true
     })
   })
+  
 }
-
 function show_mail(emails,mailbox){
 //console.log("In show mail")
+    console.log(emails)
  
     for(let i = 0 ; i < emails.length ; i++)
     {
   //    console.log(emails[i]);
+     
       let mail = document.createElement("div");
       mail.classList.add('email');
       if(emails[i].read)
         {
           mail.classList.add('is_read')
         }
+      
       if(mailbox==='sent'){
       mail.innerHTML = `
         <div class="sent_mailbox"> To: ${emails[i].recipients} </div>
@@ -99,6 +114,13 @@ function show_mail(emails,mailbox){
       ` 
       }
       else if(mailbox==='inbox'){
+        mail.innerHTML = `
+        <div class="sent_mailbox"> From: ${emails[i].sender} </div>
+        <div> Subject - ${emails[i].subject} </div>
+        <div> ${emails[i].timestamp}</div>
+      `
+      }
+      else if(mailbox==='archive'){
         mail.innerHTML = `
         <div class="sent_mailbox"> From: ${emails[i].sender} </div>
         <div> Subject - ${emails[i].subject} </div>

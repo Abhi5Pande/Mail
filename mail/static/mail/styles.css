@@ -11,3 +11,7 @@ textarea {
 .email:hover{
     background-color: lightgrey;
 }
+.archive{
+position: relative;
+left: 100%;
+}
