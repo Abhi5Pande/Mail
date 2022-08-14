@@ -1,0 +1,10 @@
+textarea {
+    min-height: 400px;
+}
+.email{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.is_read{
+    background-color: lightgrey;
+}
